@@ -62,6 +62,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		where contentsno = #{contentsno}
 	</select>
 
+	<select id="getCategory" resultType="java.util.Map">
+		select cateno, catename 
+		from category
+	</select>
+	
+    <select id="mainlist" parameterType="java.util.Map" resultType="com.model.contents.ContentsDTO">
+       select contentsno, pname, price, filename, detail, rdate 
+       from shop.contents 
+       where cateno=#{cateno};
+    </select>
 	<update id="update"
 		parameterType="com.model.contents.ContentsDTO">
 		update contents
@@ -74,7 +84,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 	<update id="updateFile" parameterType="Map">
 		update contents
-		set filename = #{filename}
+		set
+		filename = #{filename}
 		where contentsno = #{contentsno}
 	</update>
 

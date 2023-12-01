@@ -63,10 +63,8 @@
         </li> 
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Product</a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Jean</a></li>
-            <li><a class="dropdown-item" href="#">Bag</a></li>
-            <li><a class="dropdown-item" href="#">Shoes</a></li>
+          <ul class="dropdown-menu" id="pmenu">
+          
           </ul>
         </li>
         <li class="nav-item dropdown">
@@ -108,6 +106,9 @@
         </li>
         </c:when>
         <c:otherwise>
+        <li class="nav-item">
+        	<a href="${root}/member/delete/${sessionScope.id}" class="nav-link m-2"><i class="bi fs-4 bi-person-x-fill"></i>회원 탈퇴</a>
+        </li>
         <li class="nav-item">
             <a href="${root}/cart/list" class="nav-link m-2 "><i class="bi bi-cart4"></i> Cart</a>
         </li>
