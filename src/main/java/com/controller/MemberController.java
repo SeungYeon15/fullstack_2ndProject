@@ -39,29 +39,53 @@ public class MemberController {
 		return "/home";
 	}
 
-	 @GetMapping("/member/mypage")
-	 public String mypage(HttpSession session, Model model) {
-	    String id = (String)session.getAttribute("id");
-	  
-	   if(id==null) {
-	        return "redirect:./login/";
-	   }else {
-	   
-	        MemberDTO dto = service.mypage(id);
-	       
-	        model.addAttribute("dto", dto);
-	       
-	    return "/member/mypage";
-	   }
-	 }
-	
+	@GetMapping(value = "/member/findPass/{mname}/{id}", produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public List<Map> findPass(@PathVariable String mname, @PathVariable String id) {
+
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("mname", mname);
+		map.put("id", id);
+		List<Map> list = service.findPass(map);
+		System.out.println(list);
+		return list;
+	}
+
+
+	@GetMapping(value = "/member/findID/{mname}/{email}", produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public List<Map> findID(@PathVariable String mname, @PathVariable String email) {
+
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("mname", mname);
+		map.put("email", email);
+		List<Map> list = service.findID(map);
+		return list;
+	}
+
+	@GetMapping("/member/mypage")
+	public String mypage(HttpSession session, Model model) {
+		String id = (String) session.getAttribute("id");
+
+		if (id == null) {
+			return "redirect:./login/";
+		} else {
+
+			MemberDTO dto = service.mypage(id);
+
+			model.addAttribute("dto", dto);
+
+			return "/member/mypage";
+		}
+	}
+
 	@GetMapping(value = "/member/idcheck", produces = "application/json;charset=utf-8")
 	@ResponseBody
 	public Map<String, String> idcheck(String id) {
 		int cnt = service.duplicatedId(id);
 		Map<String, String> map = new HashMap<String, String>();
 
-		if (cnt > 0) { 
+		if (cnt > 0) {
 			map.put("str", id + "는 중복되어서 사용할 수 없습니다.");
 		} else {
 			map.put("str", id + "는 중복아님, 사용가능합니다.");
@@ -102,13 +126,13 @@ public class MemberController {
 
 	@PostMapping("/member/create")
 	public String create(MemberDTO dto) {
-		//아이디 중복확인 한다.(service.....)
-		//이메일 중복확인 한다.
-		
-		//if(cnt1 >0 || cnt2 >0){
-		//	return "createError";
-		//}
-		
+		// 아이디 중복확인 한다.(service.....)
+		// 이메일 중복확인 한다.
+
+		// if(cnt1 >0 || cnt2 >0){
+		// return "createError";
+		// }
+
 		String fname = Utility.saveFileSpring(dto.getFnameMF(), UploadMem.getUploadDir());
 		long fsize = dto.getFnameMF().getSize();
 
@@ -154,11 +178,11 @@ public class MemberController {
 
 		return "/member/login";
 	}
-	
+
 	@GetMapping("/member/logout")
 	public String logout(HttpSession session) {
 		session.invalidate();
-		
+
 		return "redirect:/";
 	}
 
@@ -166,7 +190,7 @@ public class MemberController {
 	public String login(@RequestParam Map<String, String> map, HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 
-		System.out.println("contentsno:"+map.get("contentsno"));
+		System.out.println("contentsno:" + map.get("contentsno"));
 		int cnt = service.loginCheck(map);
 
 		if (cnt > 0) {
@@ -197,146 +221,172 @@ public class MemberController {
 			}
 
 		}
-		
-		if(cnt>0) {
-			
-			if(map.get("contentsno")!=null  && !map.get("contentsno").equals("") ) {
-				return "redirect:/contents/detail/"+map.get("contentsno");
-			}else if(map.get("cateno")!=null && !map.get("cateno").equals("")) {
-				return "redirect:/contents/mainlist/"+map.get("cateno");
-			}else {
-			
+
+		if (cnt > 0) {
+
+			if (map.get("contentsno") != null && !map.get("contentsno").equals("")) {
+				return "redirect:/contents/detail/" + map.get("contentsno");
+			} else if (map.get("cateno") != null && !map.get("cateno").equals("")) {
+				return "redirect:/contents/mainlist/" + map.get("cateno");
+			} else {
+
 				return "redirect:/";
 			}
-			
-		}else {
-			
-		    request.setAttribute("msg", "아이디 또는 비밀번호를 잘못 입력 했거나 <br>회원이 아닙니다. 회원가입 하세요");
-		    return "passwdError";
+
+		} else {
+
+			request.setAttribute("msg", "아이디 또는 비밀번호를 잘못 입력 했거나 <br>회원이 아닙니다. 회원가입 하세요");
+			return "passwdError";
 		}
 	}
 
 	@RequestMapping("/admin/member/list")
 	public String list(HttpServletRequest request) {
-		
-		 // 검색관련------------------------
-        String col = Utility.checkNull(request.getParameter("col"));
-        String word = Utility.checkNull(request.getParameter("word"));
 
-        if (col.equals("total")) {
-                word = "";
-        }
+		// 검색관련------------------------
+		String col = Utility.checkNull(request.getParameter("col"));
+		String word = Utility.checkNull(request.getParameter("word"));
 
-        // 페이지관련-----------------------
-        int nowPage = 1;// 현재 보고있는 페이지
-        if (request.getParameter("nowPage") != null) {
-                nowPage = Integer.parseInt(request.getParameter("nowPage"));
-        }
-        int recordPerPage = 3;// 한페이지당 보여줄 레코드갯수
+		if (col.equals("total")) {
+			word = "";
+		}
 
-     // DB에서 가져올 순번(oracle)-----------------
+		// 페이지관련-----------------------
+		int nowPage = 1;// 현재 보고있는 페이지
+		if (request.getParameter("nowPage") != null) {
+			nowPage = Integer.parseInt(request.getParameter("nowPage"));
+		}
+		int recordPerPage = 3;// 한페이지당 보여줄 레코드갯수
+
+		// DB에서 가져올 순번(oracle)-----------------
 //        int sno = ((nowPage - 1) * recordPerPage) + 1;
 //        int eno = nowPage * recordPerPage;
-    // DB에서 가져올 순번(mysql)-----------------
-        int sno = (nowPage - 1) * recordPerPage;
-        int eno = recordPerPage;
+		// DB에서 가져올 순번(mysql)-----------------
+		int sno = (nowPage - 1) * recordPerPage;
+		int eno = recordPerPage;
 
-        Map map = new HashMap();
-        map.put("col", col);
-        map.put("word", word);
-        map.put("sno", sno);
-        map.put("eno", eno);
+		Map map = new HashMap();
+		map.put("col", col);
+		map.put("word", word);
+		map.put("sno", sno);
+		map.put("eno", eno);
 
-        int total = service.total(map);
+		int total = service.total(map);
 
-        List<MemberDTO> list = service.list(map);
-        
-        String url = "list";
+		List<MemberDTO> list = service.list(map);
 
-        String paging = Utility.paging(total, nowPage, recordPerPage, col, word, url);
+		String url = "list";
 
-        // request에 Model사용 결과 담는다
-        request.setAttribute("list", list);
-        request.setAttribute("nowPage", nowPage);
-        request.setAttribute("col", col);
-        request.setAttribute("word", word);
-        request.setAttribute("paging", paging);
-        
+		String paging = Utility.paging(total, nowPage, recordPerPage, col, word, url);
+
+		// request에 Model사용 결과 담는다
+		request.setAttribute("list", list);
+		request.setAttribute("nowPage", nowPage);
+		request.setAttribute("col", col);
+		request.setAttribute("word", word);
+		request.setAttribute("paging", paging);
+
 		return "/member/list";
 	}
-	
+
 	@GetMapping("/admin/member/read")
-    public String read(String id, Model model) {
-        
-        MemberDTO dto =service.read(id);
-        
-        model.addAttribute("dto", dto);
-        
-        return "/member/read";
+	public String read(String id, Model model) {
+
+		MemberDTO dto = service.read(id);
+
+		model.addAttribute("dto", dto);
+
+		return "/member/read";
 	}
-	
+
+	@GetMapping("/member/delete/{id}")
+	public String delete_me(@PathVariable String id, Model model) {
+
+		MemberDTO dto = service.read(id);
+
+		model.addAttribute("dto", dto);
+
+		return "/member/delete";
+	}
+
+	@PostMapping("/member/delete")
+	public String delete(MemberDTO dto, Model model, HttpSession session) {
+
+		int cnt = service.delete(dto);
+		String url = "redirect:/";
+		if (session.getAttribute("grade").equals("A")) {
+			url += "admin/member/list";
+		}
+
+		if (cnt > 0) {
+			return url;
+		} else {
+			return "error";
+		}
+
+	}
+
 	@GetMapping("/member/update")
 	public String update(String id, Model model) {
-		
-        MemberDTO dto =service.read(id);
-        
-        model.addAttribute("dto", dto);
-        
+
+		MemberDTO dto = service.read(id);
+
+		model.addAttribute("dto", dto);
+
 		return "/member/update";
 	}
-	
 
 	@GetMapping("/member/update/{id}")
 	public String update_me(@PathVariable String id, Model model) {
-		
-        MemberDTO dto =service.read(id);
-        
-        model.addAttribute("dto", dto);
-        
+
+		MemberDTO dto = service.read(id);
+
+		model.addAttribute("dto", dto);
+
 		return "/member/update";
 	}
-	
+
 	@PostMapping("/member/update")
 	public String update(MemberDTO dto, Model model, HttpSession session) {
-		
-        int cnt  = service.update(dto);
-        String url = "redirect:/";
-        if(session.getAttribute("grade").equals("A")) {
-        	url+="admin/member/list";
-        }
-        
-        if(cnt>0) {
-        	return url;
-        }else {
-        	return "error";
-        }
-        
+
+		int cnt = service.update(dto);
+		String url = "redirect:/";
+		if (session.getAttribute("grade").equals("A")) {
+			url += "admin/member/list";
+		}
+
+		if (cnt > 0) {
+			return url;
+		} else {
+			return "error";
+		}
+
 	}
-	
+
 	@PostMapping("/member/updateFile")
 	public String updateFile(MultipartFile fname, String oldfile, String id) {
-		if(oldfile != null && !oldfile.equals("member.jpg")) {
+		if (oldfile != null && !oldfile.equals("member.jpg")) {
 			Utility.deleteFile(UploadMem.getUploadDir(), oldfile);
 		}
-		
+
 		String filename = Utility.saveFileSpring(fname, UploadMem.getUploadDir());
-		
+
 		Map map = new HashMap();
-		map.put("id",id);
+		map.put("id", id);
 		map.put("fname", filename);
-		
+
 		int cnt = service.updateFile(map);
-		
-		if(cnt > 0) {
+
+		if (cnt > 0) {
 			return "redirect:member/mypage";
-		}else {
+		} else {
 			return "error";
 		}
 	}
-	
+
 	@GetMapping("/member/updateFile")
 	public String updateFile() {
 		return "/member/updateFile";
 	}
-	
+
 }// class end

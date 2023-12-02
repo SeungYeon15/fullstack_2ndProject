@@ -44,6 +44,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 	</select>
 	
+	<select id="findPass" parameterType="Map" resultType="java.util.Map">
+		select passwd from member where BINARY(mname) = #{mname} and BINARY(id)= #{id} 
+	</select>
+	<select id="findID" parameterType="Map" resultType="java.util.Map">
+		select id from member where BINARY(mname) = #{mname} and BINARY(email)= #{email} 
+	</select>
+	
 	<select id="mypage" parameterType="String" resultType="com.model.member.MemberDTO">
 		select mname,  tel, email, zipcode, address1, address2, fname
 		from member

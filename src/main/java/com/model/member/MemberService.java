@@ -15,4 +15,7 @@ public interface MemberService {
 	int update(MemberDTO dto);
 	MemberDTO mypage(String id);
 	int updateFile(Map map);
+	int delete(MemberDTO dto);
+	List<Map> findID(Map map);
+	List<Map> findPass(Map<String, String> map);
 }

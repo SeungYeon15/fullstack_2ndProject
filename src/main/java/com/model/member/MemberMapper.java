@@ -14,4 +14,6 @@ public interface MemberMapper {
 	MemberDTO read(String id);
 	int update(MemberDTO dto);
 	MemberDTO mypage(String id);
+	List<Map> findID(Map map);
+	List<Map> findPass(Map<String, String> map);
 }

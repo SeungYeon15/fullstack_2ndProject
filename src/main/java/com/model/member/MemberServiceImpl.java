@@ -77,4 +77,24 @@ public class MemberServiceImpl implements MemberService {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
+	@Override
+	public int delete(MemberDTO dto) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public List<Map> findID(Map map) {
+		// TODO Auto-generated method stub
+		return mapper.findID(map);
+	}
+
+	@Override
+	public List<Map> findPass(Map<String, String> map) {
+		// TODO Auto-generated method stub
+		return mapper.findPass(map);
+	}
+	
+	
 }
