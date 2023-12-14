@@ -6,4 +6,6 @@ public interface OrderMapper {
 
 	void createDetail(OrderdetailDTO odto);
 
+	int addOrder(OrdersDTO odto);
+
 }

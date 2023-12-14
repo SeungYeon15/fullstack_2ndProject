@@ -42,7 +42,7 @@
 <c:when test="${empty list}">
    <div class="row">
    <h3>상품 준비중 입니다.</h3> 
-   <p><img src="/contents/storage/default.jpg" class="img-thumbnail"  width="236" height="306"></p>
+<!--    <p><img src="/contents/storage/default.jpg" class="img-thumbnail"  width="236" height="306"></p> -->
    
    </div>
 </c:when>

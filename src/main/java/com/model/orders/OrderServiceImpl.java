@@ -29,4 +29,11 @@ public class OrderServiceImpl implements OrderService {
       
     }    
   }
+
+@Override
+public int addOrder(OrdersDTO odto) {
+	// TODO Auto-generated method stub
+	
+	return mapper.addOrder(odto);
+}
 }//class end

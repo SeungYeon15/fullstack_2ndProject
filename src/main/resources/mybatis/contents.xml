@@ -56,7 +56,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 	<select id="read" parameterType="int"
 		resultType="com.model.contents.ContentsDTO">
-		select contentsno, pname, price, filename, stock, rdate,
+		select contentsno, cateno, pname, price, filename, stock, rdate,
 		detail
 		from contents
 		where contentsno = #{contentsno}

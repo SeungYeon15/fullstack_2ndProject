@@ -226,6 +226,7 @@ public class ContentsController {
 	  public String detail(@PathVariable("contentsno") int contentsno, Model model) {
 	      
 	     model.addAttribute("dto",service.read(contentsno));
+	     model.addAttribute("user",service.read(contentsno));
 	    
 	      return "/contents/detail";
 	  }
