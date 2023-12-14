@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.UploadCon;
+import com.model.bbs.ReplyDTO;
 import com.model.contents.ContentsDTO;
 import com.model.contents.ContentsService;
 import com.utility.Utility;
@@ -224,11 +225,27 @@ public class ContentsController {
 	  
 	  @GetMapping("/contents/detail/{contentsno}")
 	  public String detail(@PathVariable("contentsno") int contentsno, Model model) {
-	      
+	     List<ReplyDTO> list = service.review(contentsno);
 	     model.addAttribute("dto",service.read(contentsno));
 	     model.addAttribute("user",service.read(contentsno));
-	    
+	     model.addAttribute("list", list);
 	      return "/contents/detail";
 	  }
-	
+
+		@GetMapping(value = "/contents/newReview/{cateno}/{contentsno}/{id}/{star}", produces = "application/json;charset=UTF-8")
+		@ResponseBody
+		public void newReview(@PathVariable String cateno, @PathVariable String contentsno,@PathVariable String id, @PathVariable String star) {
+			System.out.println(cateno);
+			System.out.println(contentsno);
+			System.out.println(star);
+			System.out.println(id);
+			
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("cateno", cateno);
+			map.put("contentsno", contentsno);
+			map.put("star", star);
+			map.put("id", id);
+			service.newReview(map);
+			return ;
+		}
 }//class end

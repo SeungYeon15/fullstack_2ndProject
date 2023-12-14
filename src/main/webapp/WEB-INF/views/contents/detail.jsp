@@ -2,6 +2,16 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ page import="com.model.bbs.*"%>
+<%@ page import="java.util.*"%>
+<%
+List<ReplyDTO> list = (List<ReplyDTO>) request.getAttribute("list");
+
+// 	String paging = (String)request.getAttribute("paging");
+// 	int nowPage = (int)request.getAttribute("nowPage");
+// 	String col = (String)request.getAttribute("col");
+// 	String word = (String)request.getAttribute("word");
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,12 +21,23 @@
 var totalAmount
 var quantity
 var quantityInput
+var starCnt = 0
 
-	function Review(){
-		return fetch('content/review')
+	function newReview(){
+		if ('${sessionScope.id}' == '') {
+			alert('먼저 로그인을 하세요');
+			let url = '/member/login';
+			url += '?contentsno=${dto.contentsno}';
+			//alert(url);
+			location.href = url;
+			return;
+		}
+		
+		return fetch('/contents/newReview/${dto.cateno}/${dto.contentsno}/${sessionScope.id}/'+starCnt)
 		.then(response => response.json())
 		.then(data=>{
-			
+			console.log("done")
+			location.reload();
 		})
 	}
 	
@@ -84,10 +105,18 @@ var quantityInput
         // 가져온 값 확인을 위해 콘솔에 출력
         console.log('선택된 사이즈: ' + selectedSize);
         document.getElementById('psize').innerText = selectedSize; 
-
-
     }
-
+    
+    function star(no){
+    	for(var i =1; i<=5; i++){
+    		document.getElementById('star'+i).className = "fa-regular fa-star"
+    	}
+    	for (var i = 1; i<=no; i++){
+    		document.getElementById('star'+i).className = "fa-solid fa-star"
+    	}
+    	starCnt = no
+    }
+    
 </script>
 </head>
 <body>
@@ -151,41 +180,95 @@ var quantityInput
 				</ul>
 			</div>
 		</div>
-		<div id="accordion">
+		<table class="table">
+			<thead>
+				<tr>
+					<th scope="col">Review</th>
+				</tr>
+			</thead>
 
-			<div class="card">
-				<div class="card-header">
-					<a class="btn" data-bs-toggle="collapse" href="#collapseOne">
-						Q&A </a>
-				</div>
-				<div id="collapseOne" class="collapse show"
-					data-bs-parent="#accordion">
-					<div class="card-body">Lorem ipsum..</div>
-				</div>
-			</div>
+			<tr>
+				<td scope="col">
+					<table class="table">
+						<thead>
+							<tr>
+								<th scope="col">#</th>
+								<th scope="col">Name</th>
+								<th scope="col">Star</th>
+							</tr>
+						</thead>
+						<tbody>
+							<%
+							if (list.size() == 0) {
+							%>
+							<tr>
+								<td style="text-align: center" colspan="5">아직 리뷰가 없습니다.</td>
+							</tr>
+							<%
+							} else {
 
-			<div class="card">
-				<div class="card-header">
-					<a class="collapsed btn" data-bs-toggle="collapse"
-						href="#collapseTwo"> Review </a>
-				</div>
-				<div id="collapseTwo" class="collapse" data-bs-parent="#accordion">
-					<div class="card-body">Lorem ipsum..</div>
-				</div>
-			</div>
+							for (int i = 0; i < list.size(); i++) {
+								ReplyDTO dto = list.get(i);
+							%>
+							<tr>
+								<th scope="row"><%=dto.getRnum()%></th>
+								<td><%=dto.getId()%></td>
+								<td>
+									<%
+									for (int d = 0; d < 5; d++) {
+										if (d < dto.getStar()) {
+									%><i class="fa-solid fa-star"></i> <%
+ } else {
+ %><i class="fa-regular fa-star"></i> <%
+ }
+ }
+ %>
+								</td>
+							</tr>
+							<%
+							} //for end 
+							} //if end
+							%>
 
-			<div class="card">
-				<div class="card-header">
-					<a class="collapsed btn" data-bs-toggle="collapse"
-						href="#collapseThree"> Collapsible Group Item #3 </a>
-				</div>
-				<div id="collapseThree" class="collapse" data-bs-parent="#accordion">
-					<div class="card-body">Lorem ipsum..</div>
-				</div>
-			</div>
+						</tbody>
+					</table> <!-- Button trigger modal -->
+					
+					<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+  리뷰작성
+</button>
 
-		</div>
-	</div>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">리뷰란</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+									<div class="star-rating">
+										<div class="stars">
+											<i class="fa-regular fa-star" id="star1" onClick="star(1)"></i>
+											<i class="fa-regular fa-star" id="star2" onClick="star(2)"></i>
+											<i class="fa-regular fa-star" id="star3" onClick="star(3)"></i>
+											<i class="fa-regular fa-star" id="star4" onClick="star(4)"></i>
+											<i class="fa-regular fa-star" id="star5" onClick="star(5)"></i>
+										</div>
+										<div class="text mt-3">상품 만족도를 평가하세요.</div>
+									</div>      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+        <button type="button" class="btn btn-primary" onclick="newReview();">완료</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+					</div>
+
+			
 	<div class="modal modal-l fade" id="exampleModal" tabindex="-1"
 		aria-labelledby="exampleModalLabel" aria-hidden="true">
 		<div class="modal-dialog">
@@ -280,18 +363,18 @@ var quantityInput
 								</div>
 								<div class="form-check">
 									<input class="form-check-input" type="radio" name="payment"
-										id="payment2" value="카카오페이"> <label class="form-check-label"
-										for="payment2"> 카카오페이 </label>
+										id="payment2" value="카카오페이"> <label
+										class="form-check-label" for="payment2"> 카카오페이 </label>
 								</div>
 								<div class="form-check">
 									<input class="form-check-input" type="radio" name="payment"
-										id="payment3" value="무통장입금"> <label class="form-check-label"
-										for="payment3"> 무통장입금 </label>
+										id="payment3" value="무통장입금"> <label
+										class="form-check-label" for="payment3"> 무통장입금 </label>
 								</div>
 								<div class="form-check">
 									<input class="form-check-input" type="radio" name="payment"
-										id="payment4" value="PAYCO"> <label class="form-check-label"
-										for="payment4"> PAYCO </label>
+										id="payment4" value="PAYCO"> <label
+										class="form-check-label" for="payment4"> PAYCO </label>
 								</div>
 							</div>
 						</div>

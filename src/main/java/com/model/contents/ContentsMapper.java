@@ -3,6 +3,8 @@ package com.model.contents;
 import java.util.List;
 import java.util.Map;
 
+import com.model.bbs.ReplyDTO;
+
 public interface ContentsMapper {
 	int create(ContentsDTO dto);
 	List<ContentsDTO> list(Map map);
@@ -12,4 +14,6 @@ public interface ContentsMapper {
 	int updateFile(Map map);
 	List<Map> getCategory();
 	List<ContentsDTO> mainlist(Map map);
+	List<ReplyDTO> review(int contentsno);
+	void newReview(Map map);
 }

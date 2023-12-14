@@ -88,5 +88,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		filename = #{filename}
 		where contentsno = #{contentsno}
 	</update>
+	
+	<select id="review" parameterType="int"
+		resultType="com.model.bbs.ReplyDTO">
+       select rnum, cateno, id, regdate, star 
+       from shop.reply 
+		where contentsno = #{contentsno}
+    </select>
+	<insert id="newReview"
+		parameterType="Map">
+		insert into reply(cateno, contentsno, id, regdate, star)
+		values(#{cateno},#{contentsno}, #{id},now(), #{star})
+	</insert>
 
 </mapper>

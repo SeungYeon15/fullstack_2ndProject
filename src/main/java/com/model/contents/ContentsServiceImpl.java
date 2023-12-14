@@ -6,6 +6,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.model.bbs.ReplyDTO;
+
 @Service("com.model.contents.ContentsServiceImpl")
 public class ContentsServiceImpl implements ContentsService {
 
@@ -58,5 +60,18 @@ public class ContentsServiceImpl implements ContentsService {
 	public List<ContentsDTO> mainlist(Map map) {
 		// TODO Auto-generated method stub
 		return mapper.mainlist(map);
+	}
+
+	@Override
+	public void newReview(Map map) {
+		// TODO Auto-generated method stub
+		mapper.newReview(map);
+		return ;
+	}
+
+	@Override
+	public List<ReplyDTO> review(int contentsno) {
+		// TODO Auto-generated method stub
+		return mapper.review(contentsno);
 	}
 }

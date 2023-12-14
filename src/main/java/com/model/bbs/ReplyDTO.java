@@ -23,7 +23,7 @@ public class ReplyDTO {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int rnum;
 	private int bbsno;
-	private String content;
+	private String cateno;
 	private LocalDate regdate;
 	private String id;
 	private int contentsno;
